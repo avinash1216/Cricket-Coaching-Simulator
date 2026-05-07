@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getLeaderboard } from "@/lib/api";
 import { useAuth } from "@/lib/AuthContext";
 import type { LeaderboardEntry } from "@/lib/types";
 
 export default function LeaderboardPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="text-4xl animate-bounce">🏆</div></div>}>
+      <LeaderboardContent />
+    </Suspense>
+  );
+}
+
+function LeaderboardContent() {
   const searchParams = useSearchParams();
   const matchId = searchParams.get("match") || "mock-mi-vs-csk-2024";
   const { userId } = useAuth();
