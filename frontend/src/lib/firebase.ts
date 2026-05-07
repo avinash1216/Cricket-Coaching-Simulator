@@ -1,10 +1,11 @@
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  type Auth,
   type User,
 } from "firebase/auth";
 
@@ -17,12 +18,19 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase (prevent duplicate initialization)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+// Only initialize Firebase on the client side
+let app: FirebaseApp | undefined;
+let auth: Auth;
+let googleProvider: GoogleAuthProvider;
+
+if (typeof window !== "undefined") {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  auth = getAuth(app);
+  googleProvider = new GoogleAuthProvider();
+}
 
 export async function signInWithGoogle() {
+  if (typeof window === "undefined") return null;
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
@@ -33,6 +41,7 @@ export async function signInWithGoogle() {
 }
 
 export async function signOut() {
+  if (typeof window === "undefined") return;
   try {
     await firebaseSignOut(auth);
   } catch (error) {
