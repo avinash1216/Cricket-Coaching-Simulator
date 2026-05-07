@@ -64,7 +64,7 @@ export default function MatchPage() {
           break;
 
         case "DECISION_SUBMITTED":
-          setSubmittedWindows((prev) => new Set([...prev, event.data.event_id]));
+          setSubmittedWindows((prev) => { const next = new Set(Array.from(prev)); next.add(event.data.event_id); return next; });
           break;
 
         case "SCORE_RESULT":
@@ -96,7 +96,7 @@ export default function MatchPage() {
   const handleDecisionSubmit = useCallback(
     (eventId: string, choice: string) => {
       submitDecision(eventId, choice);
-      setSubmittedWindows((prev) => new Set([...prev, eventId]));
+      setSubmittedWindows((prev) => { const next = new Set(Array.from(prev)); next.add(eventId); return next; });
     },
     [submitDecision]
   );
